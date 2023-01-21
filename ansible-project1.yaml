@@ -1,0 +1,48 @@
+- name: set up apache webserver on amazon linux 
+  hosts: amazon-nodes
+
+  tasks:
+    - name: Upgrade all packages on the server 
+      ansible.builtin.yum:
+        name: '*'
+        state: latest
+    - name: Install the latest version of Apache
+      ansible.builtin.yum:
+        name: httpd
+        state: latest
+    - name: Start service httpd, if not started
+      ansible.builtin.service:
+        name: httpd
+        state: started
+    - name: Enable service httpd, and not touch the state
+      ansible.builtin.service:
+        name: httpd
+        enabled: yes    
+    - name: Copy index.html from the controler to the node at /var/www/html/
+      ansible.builtin.copy:
+        src: /root/web/index.html
+        dest: /var/www/html/ 
+
+- name: setting apache on ubuntu servers
+  hosts: ubuntu-nodes
+  tasks:
+    - name: Update all packages to their latest version
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+    - name: Install apache httpd  (state=present is optional)
+      ansible.builtin.apt:
+        name: apache2
+        state: latest
+    - name: Start service httpd, if not started
+      ansible.builtin.service:
+        name: apache2
+        state: started
+    - name: Enable service httpd, and not touch the state
+      ansible.builtin.service:
+        name: apache2
+        enabled: yes
+    - name: Copy index.html from the controler to the node at /var/www/html/
+      ansible.builtin.copy:
+        src: /root/web/index.html
+        dest: /var/www/html                
